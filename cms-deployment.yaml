@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cms-app
+  template:
+    metadata:
+      labels:
+        app: cms-app
+    spec:
+      containers:
+        - name: cms-app
+          image: milli123/cms-app:1.0.2
+          ports:
+            - containerPort: 4500
+          env:
+            - name: DB_HOST
+              value: mongodb-service
+            - name: DB_NAME
+              value: "my-cms-app"
+          volumeMounts:
+            - name: cms-app-storage
+              mountPath: /my-app/public/uploads
+      volumes:
+        - name: cms-app-storage
+          persistentVolumeClaim:
+            claimName: cms-pvc
